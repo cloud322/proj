@@ -32,20 +32,45 @@ sam_0404 = df_0404.query('stock=="삼성전자"')
 sort_0404=sam_0404.sort_values(by=['date','price'])
 partcol_0404 =sam_0404[['date','price']]
 partcol_0404_09 = partcol_0404.query('date>="2018-04-04 09:00:00" & date<="2018-04-04 15:21:00"')
-ts2 =pd.Series(partcol_0404_09['price'].values, index=partcol_0404_09['date'])
+
+ts1 =pd.Series(partcol_0404_09['price'].values, index=partcol_0404_09['date'])
+TS1=np.asarray(ts1)
+partcol_0404_09.plot(x='date',y='price',title = 'samsung')
+plt.show()
+
+df_0405= pd.read_csv('data/0405_09ut8.csv',header=None,
+                names=['date','a','stock','time','price','pr_ch','vol_ch','vol'])
+sam_0405 = df_0405.query('stock=="삼성전자"')
+sort_0405=sam_0405.sort_values(by=['date','price'])
+partcol_0405 =sam_0405[['date','price']]
+partcol_0405_09 = partcol_0405.query('date>="2018-04-05 09:00:00" & date<="2018-04-05 15:21:00"')
+
+ts2 =pd.Series(partcol_0405_09['price'].values, index=partcol_0405_09['date'])
 TS2=np.asarray(ts2)
+partcol_0405_09.plot(x='date',y='price',title = 'samsung')
+plt.show()
+
+# plt.plot(lg.index, lg['Adj Close'], label='LG elec')
+# plt.plot(samsung.index, samsung['Adj Close'], label='Samsung Electronics')
+# plt.legend(loc='best')
+# plt.show()
+# plt.plot(partcol_0403_09.index, partcol_0403_09['price'], label='0403')
+# plt.plot(partcol_0404_09.index, partcol_0404_09['price'], label='0404')
+# plt.plot(partcol_0405_09.index, partcol_0405_09['price'], label='0405')
+# plt.legend(loc='best')
+# plt.show()
 
 #301440
 TS=np.asarray(ts)
 
-num_periods = 90
+num_periods = 10000
 f_horizon =1   #forcast horizon 1 period 360
 
 x_data = TS[:(len(TS)-(len(TS) % num_periods))]
-x_batches = x_data.reshape(-1,90,1)
+x_batches = x_data.reshape(-1,10000,1)
 
 y_data = TS[1:(len(TS)-(len(TS) % num_periods))+f_horizon]
-y_batches = y_data.reshape(-1,90,1)
+y_batches = y_data.reshape(-1,10000,1)
 
 print(len(x_batches))
 print(x_batches.shape)
@@ -57,20 +82,20 @@ print(y_batches.shape)
 #pull out test data
 
 def test_data(series,forcast,num_periods):
-    test_x_setup = TS[-(num_periods+forcast):]
-    test_x = test_x_setup[:num_periods].reshape(-1,90,1)
-    test_y = TS[-(num_periods):].reshape(-1,90,1)
+    test_x_setup = series[-(num_periods+forcast):]
+    test_x = test_x_setup[:num_periods].reshape(-1,10000,1)
+    test_y = series[-(num_periods):].reshape(-1,10000,1)
     return test_x,test_y
 
-x_test, y_test = test_data(TS,f_horizon,num_periods)
+x_test, y_test = test_data(TS1,f_horizon,num_periods)
 print(x_test)
 print(x_test.reshape)
 
 tf.reset_default_graph()
 
-num_periods = 90
+num_periods = 10000
 ######################
-hidden = 100
+hidden = 200
 ######################
 input = 1
 output = 1
@@ -99,7 +124,7 @@ training_op=optimizer.minimize(loss)
 init = tf.global_variables_initializer()
 
 ##########################################
-epochs = 500        #num of traing cycles
+epochs = 1000        #num of traing cycles
 ##########################################
 
 with tf.Session() as sess:

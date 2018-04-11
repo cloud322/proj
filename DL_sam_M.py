@@ -111,3 +111,4 @@ plt.plot(pd.Series(np.ravel(y_pred)), "r.", markersize=3, label="Forecast")
 plt.legend(loc='upper left')
 plt.xlabel('time')
 plt.show()
+a
